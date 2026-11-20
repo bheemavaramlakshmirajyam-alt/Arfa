@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Heart QR Code Generator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #fff0f5, #ffe4ec);
+      padding: 20px;
+      color: #2b1922;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 32px 28px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 16px 40px rgba(214, 51, 108, 0.12);
+    }
+
+    h1 {
+      font-size: 1.45rem;
+      margin-bottom: 8px;
+      color: #b5174d;
+    }
+
+    p.subtitle {
+      font-size: 0.92rem;
+      color: #6c4a58;
+      margin-bottom: 24px;
+    }
+
+    .qr-wrapper {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: #ffffff;
+      border: 2px solid #ffd6e4;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+
+    #qrcode canvas,
+    #qrcode img {
+      display: block;
+      border-radius: 8px;
+    }
+
+    .center-heart {
+      position: absolute;
+      width: 46px;
+      height: 46px;
+      background: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 10px rgba(214, 51, 108, 0.22);
+      pointer-events: none;
+    }
+
+    .center-heart svg {
+      width: 28px;
+      height: 28px;
+      fill: #e11d48;
+    }
+
+    .target-box {
+      background: #fff5f8;
+      border: 1px dashed #f4a5c0;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 0.85rem;
+      color: #5c3746;
+      word-break: break-all;
+      margin-bottom: 20px;
+    }
+
+    .target-box strong {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #b5174d;
+      margin-bottom: 4px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      padding: 11px 18px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.95;
+    }
+
+    .btn-primary {
+      background: #e11d48;
+      color: #ffffff;
+    }
+
+    .btn-secondary {
+      background: #ffe4ec;
+      color: #b5174d;
+    }
+
+    .note {
+      margin-top: 18px;
+      font-size: 0.78rem;
+      color: #8a6574;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Heart QR Code</h1>
+    <p class="subtitle">Scan to open the next page with your message</p>
+
+    <div class="qr-wrapper">
+      <div id="qrcode"></div>
+      <div class="center-heart" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="target-box">
+      <strong>Encoded Next-Page Link</strong>
+      <span id="target-url-display"></span>
+    </div>
+
+    <div class="actions">
+      <a id="open-next-btn" class="btn btn-primary" href="#">Open Next Page</a>
+      <button id="download-btn" class="btn btn-secondary" type="button">Download PNG</button>
+    </div>
+
+    <p class="note">
+      If you open this via <code>file://</code> on your computer, a phone scanning it may not reach <code>localhost</code>/local files unless hosted on a web server (like GitHub Pages, Netlify, or VS Code Live Server).
+    </p>
+  </div>
+
+  <!-- QRCode.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+    // Build the URL for the next page passing the message via query parameter
+    const nextPageUrl = new URL("next.html", window.location.href);
+    nextPageUrl.searchParams.set("msg", "I love you 🌷💝");
+
+    const finalUrl = nextPageUrl.toString();
+    document.getElementById("target-url-display").textContent = finalUrl;
+    document.getElementById("open-next-btn").href = finalUrl;
+
+    const qrContainer = document.getElementById("qrcode");
+    const qrSize = 230;
+
+    new QRCode(qrContainer, {
+      text: finalUrl,
+      width: qrSize,
+      height: qrSize,
+      colorDark: "#881337",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.H // High error correction allows center heart logo
+    });
+
+    // Download combined QR + Heart as PNG
+    document.getElementById("download-btn").addEventListener("click", () => {
+      const qrCanvas = qrContainer.querySelector("canvas");
+      const qrImg = qrContainer.querySelector("img");
+
+      const exportCanvas = document.createElement("canvas");
+      const padding = 24;
+      exportCanvas.width = qrSize + padding * 2;
+      exportCanvas.height = qrSize + padding * 2;
+      const ctx = exportCanvas.getContext("2d");
+
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+
+      const drawOverlayAndSave = (source) => {
+        ctx.drawImage(source, padding, padding, qrSize, qrSize);
+
+        // Draw white badge + heart in center
+        const cx = exportCanvas.width / 2;
+        const cy = exportCanvas.height / 2;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 24, 0, Math.PI * 2);
+        ctx.fillStyle = "#ffffff";
+        ctx.fill();
+
+        ctx.fillStyle = "#e11d48";
+        ctx.font = "28px sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("♥", cx, cy + 1);
+
+        const link = document.createElement("a");
+        link.download = "heart-qr-code.png";
+        link.href = exportCanvas.toDataURL("image/png");
+        link.click();
+      };
+
+      if (qrCanvas) {
+        drawOverlayAndSave(qrCanvas);
+      } else if (qrImg) {
+        const tempImg = new Image();
+        tempImg.crossOrigin = "anonymous";
+        tempImg.onload = () => drawOverlayAndSave(tempImg);
+        tempImg.src = qrImg.src;
+      }
+    });
+  </script>
+</body>
+</html>

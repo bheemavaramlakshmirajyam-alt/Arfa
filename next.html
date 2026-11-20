@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For You 🌷💝</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #ffe6ef, #ffd1e1 65%, #ffc2d8);
+      padding: 24px;
+      text-align: center;
+      color: #7a0c34;
+    }
+
+    .message-card {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+      border-radius: 28px;
+      padding: 48px 32px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 20px 45px rgba(181, 23, 77, 0.16);
+      animation: popIn 0.45s ease-out;
+    }
+
+    .pulse-heart {
+      font-size: 3rem;
+      display: inline-block;
+      margin-bottom: 16px;
+      animation: pulse 1.4s infinite ease-in-out;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      line-height: 1.3;
+      color: #be123c;
+      word-break: break-word;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="message-card">
+    <div class="pulse-heart">💝</div>
+    <h1 id="message">I love you 🌷💝</h1>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const msg = params.get("msg");
+    if (msg && msg.trim() !== "") {
+      document.getElementById("message").textContent = msg;
+    }
+  </script>
+</body>
+</html>
